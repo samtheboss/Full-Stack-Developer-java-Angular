@@ -1,0 +1,20 @@
+<div class="data-generation-container">
+    <h2>Data Generation</h2>
+    <form (ngSubmit)="generateData()" #genForm="ngForm">
+        <label for="recordCount">Number of Records:</label>
+        <input
+                type="number"
+                id="recordCount"
+                name="recordCount"
+                [(ngModel)]="recordCount"
+                required
+                min="0"
+        />
+        <button type="submit" [disabled]="genForm.invalid || isLoading">
+            Generate Excel
+        </button>
+    </form>
+    <div *ngIf="isLoading">Generating file, please wait...</div>
+    <div *ngIf="message">{{ message }}</div>
+</div>
+

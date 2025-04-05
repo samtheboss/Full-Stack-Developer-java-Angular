@@ -1,0 +1,12 @@
+<div class="container">
+    <div class="upload-card">
+        <div class="content">
+            <h2 class="title">Data Upload</h2>
+            <input type="file" (change)="onFileSelected($event)" accept=".xlsx" />
+            <button  (click)="uploadFile()" [disabled]="!selectedFile || isLoading" class="upload-button">Upload Excel Data
+            </button>
+            <div class="loading-message" *ngIf="isLoading">Uploading...</div>
+            <div class="success-message" *ngIf="message">{{ message }}</div>
+        </div>
+    </div>
+</div>

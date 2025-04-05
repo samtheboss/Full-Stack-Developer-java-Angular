@@ -1,0 +1,13 @@
+
+<div class="container">
+    <div class="upload-card">
+        <div class="content">
+            <h2 class="title">Data Upload</h2>
+            <button  (click)="processData()" [disabled]="isLoading" class="upload-button">
+                Convert  Excel Data to CSV
+            </button>
+            <div class="loading-message" *ngIf="isLoading">Uploading...</div>
+            <div class="success-message" *ngIf="message">{{ message }}</div>
+        </div>
+    </div>
+</div>
