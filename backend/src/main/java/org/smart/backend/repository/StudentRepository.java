@@ -27,6 +27,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
           + "(:#{#filter.studentId} IS NULL OR s.studentId = :#{#filter.studentId}) AND "
           + "(:#{#filter.studentClass} IS NULL OR s.studentClass = :#{#filter.studentClass}) AND "
           + "(:#{#filter.startDate} IS NULL OR s.dob >= :#{#filter.startDate}) AND "
-          + "(:#{#filter.endDate} IS NULL OR s.dob <= :#{#filter.endDate})")
+          + "(:#{#filter.endDate} IS NULL OR s.dob <= :#{#filter.endDate}) and s.status =1")
   Page<Student> findStudents(@Param("filter") StudentFilter filter, Pageable pageable);
 }

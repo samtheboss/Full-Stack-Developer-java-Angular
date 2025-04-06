@@ -14,13 +14,6 @@ import java.util.Map;
 public class ExcelController {
   @Autowired private ExcelService excelService;
 
-//  @PostMapping("/generate")
-//  public Map<String, String> generateData(@RequestParam int count) {
-//    String message = excelService.generateStudentData(count);
-//    return Map.of("message", message);
-//  }
-
-
 
   @PostMapping("/generate")
   public ResponseEntity<String> generateData(@RequestBody Map<String, Integer> request) {

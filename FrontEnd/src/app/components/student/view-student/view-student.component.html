@@ -1,0 +1,49 @@
+<div class="container">
+    <h2>Student Profile</h2>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <img
+                    [src]="imagePreviewUrl"
+                    alt="Student Photo"
+                    width="150"
+                    height="150"
+                    class="rounded mb-3"
+            />
+        </div>
+
+        <div class="profile-body">
+            <div class="profile-field">
+                <span class="field-label">Student ID:</span>
+                <span class="field-value">{{ student.studentId }}</span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Name:</span>
+                <span class="field-value">{{ student.firstName }} {{ student.lastName }}</span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">DOB:</span>
+                <span class="field-value">{{ student.dob }}</span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Class:</span>
+                <span class="field-value">{{ student.studentClass }}</span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Score:</span>
+                <span class="field-value">{{ student.score }}</span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Status:</span>
+                <span class={`status-badge>
+                {{ student.status === 1 ? 'Active' : 'Inactive' }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

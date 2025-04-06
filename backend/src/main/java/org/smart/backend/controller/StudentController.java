@@ -4,13 +4,18 @@ import org.smart.backend.entity.Student;
 import org.smart.backend.entity.StudentFilter;
 import org.smart.backend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +37,13 @@ public class StudentController {
     return studentService.getStudentById(id);
   }
 
-  @PutMapping("/update")
-  public Student updateStudent(@RequestBody Student student) {
-    return studentService.updateStudent(student);
+  @PutMapping("/update/{studentId}")
+  public ResponseEntity<Student> updateStudent(
+          @PathVariable Long studentId,
+          @RequestBody Student student
+  ) {
+    Student updated = studentService.updateStudent(studentId, student);
+    return ResponseEntity.ok(updated);
   }
 
   @DeleteMapping("/{id}")
@@ -43,21 +52,6 @@ public class StudentController {
     return Map.of("message", "Student deleted successfully!");
   }
 
-  @GetMapping("/filter/id/{studentId}")
-  public List<Student> filterByStudentId(@PathVariable Long studentId) {
-    return studentService.filterByStudentId(studentId);
-  }
-
-  @GetMapping("/filter/class/{studentClass}")
-  public List<Student> filterByClass(@PathVariable String studentClass) {
-    return studentService.filterByClass(studentClass);
-  }
-
-  @GetMapping("/filter/dob")
-  public List<Student> filterByDobRange(
-      @RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
-    return studentService.filterByDobRange(startDate, endDate);
-  }
 
   @GetMapping("/export")
   public Map<String, String> exportToExcel() {
@@ -70,7 +64,27 @@ public class StudentController {
       @PathVariable Long id, @RequestParam("file") MultipartFile file) {
     return studentService.uploadStudentPhoto(id, file);
   }
+  @GetMapping("/photo/{filename:.+}")
+  public ResponseEntity<Resource> getPhoto(@PathVariable String filename) {
+    try {
+      String[] parts = filename.split("-", 2);
+      if (parts.length < 2) {
+        return ResponseEntity.badRequest().build();
+      }
+      long studentId = Long.parseLong(parts[0]);
+      Path photoPath = Paths.get("C:/var/log/applications/API/StudentPhotos").resolve(filename).normalize();
+      Resource resource = new UrlResource(photoPath.toUri());
+      if (!resource.exists()) {
+        return ResponseEntity.notFound().build();
+      }
+      return ResponseEntity.ok()
+              .contentType(MediaType.IMAGE_JPEG)
+              .body(resource);
 
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().build();
+    }
+  }
   @PostMapping("/students")
   public Page<Student> searchStudents(@RequestBody StudentFilter filter) {
     Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());

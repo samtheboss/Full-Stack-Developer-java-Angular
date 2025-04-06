@@ -1,78 +1,80 @@
-.data-generation-container {
-  width: 500px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
 
-.data-generation-container h2 {
-  color: #1a1a1a;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-}
-
-.data-generation-container form {
+.container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
 
-.data-generation-container label {
-  font-size: 0.95rem;
-  color: #4a5568;
+.card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.content {
+  text-align: center;
+}
+
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.container button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
   font-weight: 500;
+  color: white;
+  background-color: #2563eb;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.data-generation-container input {
+.container input {
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
+  height: 40px;
   font-size: 1rem;
   transition: border-color 0.2s ease;
   outline: none;
 }
 
-.data-generation-container input:focus {
+.container input:focus {
   border-color: #4299e1;
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
 }
 
-.data-generation-container button {
+.loading-message {
   margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #4299e1;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  color: #2563eb;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.success-message {
+  margin-top: 1rem;
+  color: #059669;
   font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.data-generation-container button:hover:not(:disabled) {
-  background-color: #3182ce;
-}
-
-.data-generation-container button:disabled {
-  background-color: #cbd5e0;
-  cursor: not-allowed;
-}
-
-.data-generation-container div {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-}
-
-.data-generation-container div:first-of-type {
-  background-color: #ebf8ff;
-  color: #2b6cb0;
-}
-
-.data-generation-container div:last-of-type {
-  background-color: #f0fff4;
-  color: #2f855a;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
 }

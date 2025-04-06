@@ -1,15 +1,13 @@
 package org.smart.backend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class StudentFilter {
     int page;

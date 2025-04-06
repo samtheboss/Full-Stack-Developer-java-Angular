@@ -1,0 +1,22 @@
+# Node modules (frontend & backend)
+**/node_modules/
+
+# IntelliJ/WebStorm/PhpStorm IDE settings
+.idea/
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Compiled output (optional)
+dist/
+build/
+out/

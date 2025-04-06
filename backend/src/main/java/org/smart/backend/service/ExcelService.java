@@ -1,6 +1,7 @@
 package org.smart.backend.service;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.smart.backend.entity.Student;
 import org.smart.backend.repository.StudentRepository;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static org.smart.backend.Utils.Utils.ensureDirectoryExists;
 
 @Service
 public class ExcelService {
@@ -59,9 +62,9 @@ public class ExcelService {
 
   private void writeToExcel(List<Student> students) {
     ensureDirectoryExists();
-
-    try (Workbook workbook = new XSSFWorkbook();
+    try (SXSSFWorkbook workbook = new SXSSFWorkbook(100); // keep 100 rows in memory at a time
         FileOutputStream fileOut = new FileOutputStream(FILE_PATH)) {
+
       Sheet sheet = workbook.createSheet("Students");
       Row header = sheet.createRow(0);
       String[] columns = {
@@ -70,11 +73,10 @@ public class ExcelService {
       for (int i = 0; i < columns.length; i++) {
         header.createCell(i).setCellValue(columns[i]);
       }
-
       int rowNum = 1;
       for (Student student : students) {
-        Row row = sheet.createRow(rowNum++);
-        row.createCell(0).setCellValue(rowNum - 1);
+        Row row = sheet.createRow(rowNum);
+        row.createCell(0).setCellValue(rowNum);
         row.createCell(1).setCellValue(student.getFirstName());
         row.createCell(2).setCellValue(student.getLastName());
         row.createCell(3).setCellValue(student.getDob().toString());
@@ -82,23 +84,46 @@ public class ExcelService {
         row.createCell(5).setCellValue(student.getScore());
         row.createCell(6).setCellValue(student.getStatus());
         row.createCell(7).setCellValue(student.getPhotoPath());
+        rowNum++;
       }
-
       workbook.write(fileOut);
+      workbook.dispose();
     } catch (IOException e) {
       throw new RuntimeException("Error writing Excel file", e);
     }
   }
 
-  private void ensureDirectoryExists() {
-    File directory = new File("C:/var/log/applications/API/dataprocessing");
-    if (!directory.exists()) {
-      boolean dirsCreated = directory.mkdirs();
-      if (!dirsCreated) {
-        throw new RuntimeException("Failed to create directory for Excel file.");
-      }
-    }
-  }
+  //  private void writeToExcel(List<Student> students) {
+  //    ensureDirectoryExists();
+  //    try (Workbook workbook = new XSSFWorkbook();
+  //        FileOutputStream fileOut = new FileOutputStream(FILE_PATH)) {
+  //      Sheet sheet = workbook.createSheet("Students");
+  //      Row header = sheet.createRow(0);
+  //      String[] columns = {
+  //        "Student ID", "First Name", "Last Name", "DOB", "Class", "Score", "Status", "Photo Path"
+  //      };
+  //      for (int i = 0; i < columns.length; i++) {
+  //        header.createCell(i).setCellValue(columns[i]);
+  //      }
+  //
+  //      int rowNum = 1;
+  //      for (Student student : students) {
+  //        Row row = sheet.createRow(rowNum++);
+  //        row.createCell(0).setCellValue(rowNum - 1);
+  //        row.createCell(1).setCellValue(student.getFirstName());
+  //        row.createCell(2).setCellValue(student.getLastName());
+  //        row.createCell(3).setCellValue(student.getDob().toString());
+  //        row.createCell(4).setCellValue(student.getStudentClass());
+  //        row.createCell(5).setCellValue(student.getScore());
+  //        row.createCell(6).setCellValue(student.getStatus());
+  //        row.createCell(7).setCellValue(student.getPhotoPath());
+  //      }
+  //
+  //      workbook.write(fileOut);
+  //    } catch (IOException e) {
+  //      throw new RuntimeException("Error writing Excel file", e);
+  //    }
+  //  }
 
   private String randomString(int min, int max) {
     int length = new Random().nextInt(max - min + 1) + min;
@@ -115,7 +140,6 @@ public class ExcelService {
     int day = 1 + new Random().nextInt(28);
     return LocalDate.of(year, month, day);
   }
-
 
   public String uploadStudentData(MultipartFile file) {
     List<Student> students = readFromExcel(file);
@@ -174,6 +198,7 @@ public class ExcelService {
     }
     return students;
   }
+
   private List<Student> readFromExcel() {
     List<Student> students = new ArrayList<>();
     try (Workbook workbook = new XSSFWorkbook(new FileInputStream(FILE_PATH))) {

@@ -1,0 +1,61 @@
+<div class="container mt-4">
+    <h2>Student Management</h2>
+    <div class="filters">
+        <input type="text" [(ngModel)]="filters.studentId" placeholder="Student ID"/>
+        <select [(ngModel)]="filters.studentClass">
+            <option value="">-- Class --</option>
+            <option *ngFor="let cls of classOptions">{{ cls }}</option>
+        </select>
+        <input type="date" [(ngModel)]="filters.dobStart"/>
+        <input type="date" [(ngModel)]="filters.dobEnd"/>
+        <button class="filterButton" (click)="applyFilters()">Apply Filters</button>
+        <button class="export-btn" (click)="exportToExcel()">Export to Excel</button>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>DOB</th>
+            <th>Class</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Photo</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let student of students">
+            <td>{{ student.studentId }}</td>
+            <td>{{ student.firstName }} {{ student.lastName }}</td>
+            <td>{{ student.dob }}</td>
+            <td>{{ student.studentClass }}</td>
+            <td>{{ student.score }}</td>
+            <td>
+          <span [ngClass]="{'status-active': student.status === 1, 'status-inactive': student.status !== 1}">
+            {{ student.status === 1 ? 'Active' : 'Inactive' }}
+          </span>
+            </td>
+            <td>
+                <img [src]="getStudentPhotoUrl(student.photoPath)"
+                     alt="Photo"
+                     width="50"
+                     height="50"
+                     class="avatar"
+                />
+            </td>
+            <td class="actions">
+                <button class='view-btn' [routerLink]="['/student/view', student.studentId]">View</button>
+                <button class='edit-btn' [routerLink]="['/edit-student', student.studentId]">Edit</button>
+                <button class='delete-btn' (click)="deleteStudent(student.studentId)">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <button (click)="prevPage()" [disabled]="page === 0">Previous</button>
+        <span>Page {{ page + 1 }}</span>
+        <button (click)="nextPage()">Next</button>
+    </div>
+</div>

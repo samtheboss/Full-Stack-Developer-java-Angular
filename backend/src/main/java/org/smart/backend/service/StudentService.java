@@ -25,11 +25,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.smart.backend.Utils.Utils.ensureDirectoryExists;
+
 @Service
 public class StudentService {
   @Autowired private StudentRepository studentRepository;
   private static final String EXPORT_PATH =
-      "C:/var/log/applications/API/StudentReports/students.xlsx";
+      "C:/var/log/applications/API/StudentReports/studentsdata.xlsx";
 
   public List<Student> getAllStudents() {
     return studentRepository.findAll();
@@ -43,9 +45,20 @@ public class StudentService {
     return studentRepository.findById(id);
   }
 
-  public Student updateStudent(Student student) {
-    return studentRepository.save(student);
+
+  public Student updateStudent(Long studentId, Student student) {
+    Student existing = studentRepository.findById(studentId)
+            .orElseThrow(() -> new RuntimeException("Student not found"));
+    existing.setFirstName(student.getFirstName());
+    existing.setLastName(student.getLastName());
+    existing.setDob(student.getDob());
+    existing.setStudentClass(student.getStudentClass());
+    existing.setScore(student.getScore());
+    existing.setStatus(student.getStatus());
+    return studentRepository.save(existing);
   }
+
+
 
   public void deleteStudent(Long id) {
     Student student = studentRepository.findById(id).orElseThrow();
@@ -68,42 +81,54 @@ public class StudentService {
   public List<Student> filterByDobRange(LocalDate startDate, LocalDate endDate) {
     return studentRepository.findByDobBetween(startDate, endDate);
   }
-
   public String exportToExcel() {
     List<Student> students = studentRepository.findAll();
     if (students.isEmpty()) {
       return "No data available for export!";
     }
-    try (Workbook workbook = new XSSFWorkbook();
-        FileOutputStream fos = new FileOutputStream(EXPORT_PATH)) {
-      Sheet sheet = workbook.createSheet("Students");
-      Row header = sheet.createRow(0);
-      String[] columns = {
-        "StudentID", "FirstName", "LastName", "DOB", "Class", "Score", "Status", "PhotoPath"
-      };
-      for (int i = 0; i < columns.length; i++) {
-        header.createCell(i).setCellValue(columns[i]);
-      }
-      int rowNum = 1;
-      for (Student student : students) {
-        Row row = sheet.createRow(rowNum++);
-        row.createCell(0).setCellValue(student.getStudentId());
-        row.createCell(1).setCellValue(student.getFirstName());
-        row.createCell(2).setCellValue(student.getLastName());
-        row.createCell(3).setCellValue(student.getDob().toString());
-        row.createCell(4).setCellValue(student.getStudentClass());
-        row.createCell(5).setCellValue(student.getScore());
-        row.createCell(6).setCellValue(student.getStatus());
-        row.createCell(7).setCellValue(student.getPhotoPath());
+
+    try (Workbook workbook = new XSSFWorkbook()) {
+      // Make sure the parent directory exists
+      File exportFile = new File(EXPORT_PATH);
+      File exportDir = exportFile.getParentFile();
+      if (!exportDir.exists()) {
+        exportDir.mkdirs(); // create directories if not exist
       }
 
-      workbook.write(fos);
+      try (FileOutputStream fos = new FileOutputStream(exportFile)) {
+        Sheet sheet = workbook.createSheet("Students");
+
+        Row header = sheet.createRow(0);
+        String[] columns = {
+                "StudentID", "FirstName", "LastName", "DOB", "Class", "Score", "Status", "PhotoPath"
+        };
+        for (int i = 0; i < columns.length; i++) {
+          header.createCell(i).setCellValue(columns[i]);
+        }
+
+        int rowNum = 1;
+        for (Student student : students) {
+          Row row = sheet.createRow(rowNum++);
+          row.createCell(0).setCellValue(student.getStudentId());
+          row.createCell(1).setCellValue(student.getFirstName());
+          row.createCell(2).setCellValue(student.getLastName());
+          row.createCell(3).setCellValue(student.getDob().toString());
+          row.createCell(4).setCellValue(student.getStudentClass());
+          row.createCell(5).setCellValue(student.getScore());
+          row.createCell(6).setCellValue(student.getStatus());
+          row.createCell(7).setCellValue(student.getPhotoPath());
+        }
+
+        workbook.write(fos);
+      }
+
     } catch (IOException e) {
       throw new RuntimeException("Error exporting to Excel", e);
     }
 
     return "Excel exported successfully at: " + EXPORT_PATH;
   }
+
 
   public ResponseEntity<String> uploadStudentPhoto(Long id, MultipartFile file) {
     Optional<Student> studentOptional = studentRepository.findById(id);
