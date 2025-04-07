@@ -26,18 +26,6 @@ export class LoginComponent {
         })
     }
 
-    // login() {
-    //   console.log(this.loginForm.value);
-    //   this.service.login(this.loginForm.value).subscribe((response) => {
-    //     console.log(response);
-    //     if (response.jwtToken) {
-    //
-    //       const jwtToken = response.jwtToken;
-    //       localStorage.setItem('JWT', jwtToken);
-    //       this.router.navigate(['dashboard']);
-    //     }
-    //   })
-    // }
     login() {
         const {username, password} = this.loginForm.value;
         this.service.login(username, password).subscribe({
@@ -48,8 +36,7 @@ export class LoginComponent {
                 this.router.navigate(['dashboard']);
             },
             error: (err) => {
-                console.error('Login failed', err);
-                // Optionally show error to user
+                console.error('Login failed', err)
             }
         });
     }
